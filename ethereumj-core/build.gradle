@@ -23,7 +23,7 @@ plugins {
 apply plugin: 'propdeps-maven'
 apply plugin: 'com.jfrog.artifactory-upload'
 
-sourceCompatibility = 1.7
+sourceCompatibility = 1.8
 
 mainClassName = 'org.ethereum.Start'
 applicationDefaultJvmArgs = ["-server", "-Xss32m", "-Xmx3500M", "-XX:-OmitStackTraceInFastThrow"]
@@ -61,6 +61,16 @@ task runTest (type: JavaExec) {
     main = mainClassName
     classpath = sourceSets.main.runtimeClasspath
     jvmArgs = applicationDefaultJvmArgs + '-Dethereumj.conf.res=test.conf'
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'EthereumJ Crawler v0.1',
+                'Main-Class': 'org.ethereum.Crawler'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }
 
 /**

@@ -30,8 +30,6 @@ public class MordenSample extends BasicSample {
                 "peer.discovery = {" +
                 "    enabled = true \n" +
                 "    ip.list = [" +
-                "        '94.242.229.4:40404'," +
-                "        '94.242.229.203:30303'" +
                 "    ]" +
                 "} \n" +
                 "peer.p2p.eip8 = true \n" +

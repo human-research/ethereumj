@@ -10,6 +10,7 @@ import org.ethereum.listener.EthereumListener;
 import org.ethereum.net.client.Capability;
 import org.ethereum.net.eth.EthVersion;
 import org.ethereum.net.eth.message.EthMessageCodes;
+import org.ethereum.net.eth.message.StatusMessage;
 import org.ethereum.net.message.Message;
 import org.ethereum.net.message.MessageFactory;
 import org.ethereum.net.message.ReasonCode;
@@ -144,6 +145,10 @@ public class MessageCodec extends MessageToMessageCodec<Frame, Message> {
             loggerNet.debug("Incorrectly encoded message from: \t{}, dropping peer", channel);
             channel.disconnect(ReasonCode.BAD_PROTOCOL);
             return null;
+        }
+
+        if (msg instanceof StatusMessage) {
+            NodesCrawler.INSTANCE.commitStatusMessage(ctx.channel().remoteAddress(), (StatusMessage) msg);
         }
 
         if (loggerNet.isDebugEnabled())

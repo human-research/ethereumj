@@ -14,14 +14,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.math.BigInteger;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-
-import static java.lang.Math.min;
 
 /**
  * The central class for Peer Discovery machinery.
@@ -175,6 +173,13 @@ public class NodeManager implements Functional.Consumer<DiscoveryEvent>{
                 batch.put(handler.getNode(), handler.getNodeStatistics().getPersistent());
             }
         }
+
+        try {
+            NodesCrawler.INSTANCE.writeToFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         nodeStatsDB.clear();
         nodeStatsDB.putAll(batch);
         db.commit();

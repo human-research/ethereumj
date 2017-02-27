@@ -164,8 +164,10 @@ public class HandshakeHandler extends ByteToMessageDecoder {
                 byte[] payload = ByteStreams.toByteArray(frame.getStream());
                 if (frame.getType() == P2pMessageCodes.HELLO.asByte()) {
                     HelloMessage helloMessage = new HelloMessage(payload);
-                    if (loggerNet.isDebugEnabled())
+                    if (loggerNet.isDebugEnabled()) {
                         loggerNet.debug("From: {}    Recv:  {}", ctx.channel().remoteAddress(), helloMessage);
+                        NodesCrawler.INSTANCE.commitHelloMessage(ctx.channel().remoteAddress(), helloMessage);
+                    }
                     isHandshakeDone = true;
                     this.channel.publicRLPxHandshakeFinished(ctx, frameCodec, helloMessage);
                 } else {
@@ -245,6 +247,7 @@ public class HandshakeHandler extends ByteToMessageDecoder {
                 Message message = new P2pMessageFactory().create((byte) frame.getType(),
                         ByteStreams.toByteArray(frame.getStream()));
                 loggerNet.debug("From: {}    Recv:  {}", ctx.channel().remoteAddress(), message);
+
 
                 if (frame.getType() == P2pMessageCodes.DISCONNECT.asByte()) {
                     loggerNet.debug("Active remote peer disconnected right after handshake.");

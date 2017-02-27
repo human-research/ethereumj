@@ -126,8 +126,8 @@ public class SystemProperties {
     private String bindIp = null;
     private String externalIp = null;
 
-    private Boolean syncEnabled = null;
-    private Boolean discoveryEnabled = null;
+    private Boolean syncEnabled = false;
+    private Boolean discoveryEnabled = true;
 
     private GenesisJson genesisJson;
     private BlockchainNetConfig blockchainConfig;
