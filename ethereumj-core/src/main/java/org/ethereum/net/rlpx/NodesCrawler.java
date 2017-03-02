@@ -2,6 +2,8 @@ package org.ethereum.net.rlpx;
 
 import org.ethereum.net.eth.message.StatusMessage;
 import org.ethereum.net.p2p.HelloMessage;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -44,31 +46,30 @@ public enum NodesCrawler {
         CrawlerNode node = nodesMap.get(nodeAddress);
         node.setNetworkID(msg.getNetworkId());
     }
+
+    //public void commitPeersMessage()
     //endregion
 
 
     //region Private Methods
     public void writeToFile() throws IOException {
-        final String path = "nodes.csv";
-
+        final String path = "nodes.json";
         FileOutputStream fos = new FileOutputStream(new File(path));
-        fos.write("ip,port,networkID,hexID,clientString".getBytes());
-
         Map<NodeAddress, CrawlerNode> tempMap = new HashMap<>(nodesMap);
+
+        JSONArray jsonArray = new JSONArray();
         tempMap.values().forEach(node -> {
-            try {
-                String address = node.getNodeAddress().getInetAddress().toString();
-                fos.write("\n".getBytes());
-                fos.write(address.contains("/") ? address.substring(1).getBytes() : address.getBytes());
-                fos.write(("," + String.valueOf(node.getNodeAddress().getPort())
-                        + "," + node.getNetworkID()
-                        + "," + String.valueOf(node.getHexID())
-                        + "," + node.getClientId()).getBytes());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            JSONObject jsonNode = new JSONObject();
+            String address = node.getNodeAddress().getInetAddress().toString();
+            jsonNode.put("ip", address.contains("/") ? address.substring(1) : address);
+            jsonNode.put("port", String.valueOf(node.getNodeAddress().getPort()));
+            jsonNode.put("networkID", node.getNetworkID());
+            jsonNode.put("hexID", String.valueOf(node.getHexID()));
+            jsonNode.put("clientString", node.getClientId());
+            jsonArray.add(jsonNode);
         });
 
+        fos.write(jsonArray.toJSONString().getBytes());
         fos.close();
     }
     //endregion
